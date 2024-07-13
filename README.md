@@ -5,6 +5,7 @@
 - [Vite.js](https://vitejs.dev/) - to set-up the project in less than a minute
 - [TailwindCSS](https://tailwindcss.com/) - to style html elements inside the html code using classes
 - [ReactPlayer](https://github.com/cookpete/react-player) - to have a solid video player base I can customize
+- [Material Icons](https://mui.com/material-ui/material-icons/) - to have some clean icons for ui
   
 and maybe more ready-to-use solutions to come. will keep this updated.
 
