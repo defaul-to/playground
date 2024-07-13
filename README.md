@@ -6,7 +6,8 @@
 - [TailwindCSS](https://tailwindcss.com/) - to style html elements inside the html code using classes
 - [ReactPlayer](https://github.com/cookpete/react-player) - to have a solid video player base I can customize
 - [Material Icons](https://mui.com/material-ui/material-icons/) - to have some clean icons for ui
-  
+- [heroicons](https://heroicons.com/) - same as above
+
 and maybe more ready-to-use solutions to come. will keep this updated.
 
 as of now the backend (database, api) remains private.
