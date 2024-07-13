@@ -7,3 +7,5 @@
 - [ReactPlayer](https://github.com/cookpete/react-player) - to have a solid video player base I can customize
   
 and maybe more ready-to-use solutions to come. will keep this updated.
+
+As of now the backend (database, api) remains private.
