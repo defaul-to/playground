@@ -14,15 +14,26 @@ as of now the backend (database, api) remains private.
 
 Current Features:
 - Video Player
+  - [x] big play icon before the video started
   - [x] skip intro button (timestamps have to be passed to the video player for this to show up)
   - [x] fullscreen support
   - [x] custom controls (copied the layout from the crunchyroll player)
+    - [x] current time
+    - [x] video length 
     - [x] slider
     - [x] enter/exit fullscreen
-    - [x] pause/resume video playback
+    - [x] pause/resume/repeat video playback
     - [ ] settings
     - [ ] volume changer
     - [ ] skip to the next video in a playlist 
   - [x] stop displaying controls when mouse hasn't moved for x seconds while hovering the video player
   - [x] stop displaying 'skip intro' button after x seconds in the intro have been passed
   - [x] show controls and skip intro button when hovering over the video player
+  - [x] slider changes the current displayed time
+  - [x] slider changes to the new time only when releasing the mouse
+  - [x] video doesn't start from 0:00 again when finished playing
+  - [x] video controls remain visible when the video is over
+  - [ ] when moving the slider, the slider should show a small image of the current target frame
+
+https://github.com/user-attachments/assets/4e784e1b-f3a1-4954-b599-4c019b7833e7
+
