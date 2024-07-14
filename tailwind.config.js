@@ -5,7 +5,16 @@ export default {
     "./src/**/*.{js,ts,jsx,tsx}",
   ],
   theme: {
-    extend: {},
+    extend: {
+      fontFamily: {
+        pk: ['Planet Kosmos'],
+      },
+      colors: {
+        primary: '#000',
+        secondary: '#ececec',
+        contrast: '#D7ABC5',
+      },
+    },
   },
   plugins: [],
 }

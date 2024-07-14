@@ -1,5 +1,7 @@
 import CustomVideoPlayer from "./videoplayer";
 
+// lets assume I have authentication implemented already
+// and that the api returns me this data from a video id after passing authentication
 const videoInfo = {
   url: 'https://api.defaul.to/video',
   anime: 'Call of the Night',
@@ -12,13 +14,16 @@ const videoInfo = {
 
 function App() {
   return (
-    <div className="min-h-screen bg-black">
-      <div className="w-full max-w-[60rem] mx-auto flex gap-4 py-4 flex-col bg-black text-white">
+    <div className="min-h-screen bg-primary">
+      <div className="w-full max-w-[60rem] mx-auto flex gap-4 py-4 flex-col bg-primary text-secondary">
+        <div className="w-full border border-contrast border-b-1 border-t-0 border-l-0 border-r-0 pb-5 flex">
+          <div className="font-pk text-xl">defaul.to</div>
+        </div>
         <div>
           <div className="">
             <CustomVideoPlayer videoInfo={videoInfo}/>
           </div>
-          <h1 className="text-xl text-blue-600 font-bold">{videoInfo.anime}</h1>
+          <h1 className="text-xl text-contrast font-bold">{videoInfo.anime}</h1>
           <h1 className="text-xl">{videoInfo.title}</h1>
         </div>
       </div>
