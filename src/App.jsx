@@ -23,8 +23,8 @@ function App() {
           <div className="">
             <CustomVideoPlayer videoInfo={videoInfo}/>
           </div>
-          <h1 className="text-xl text-contrast font-bold">{videoInfo.anime}</h1>
-          <h1 className="text-xl">{videoInfo.title}</h1>
+          <h1 className="mt-5 text-xl text-contrast">{videoInfo.anime}</h1>
+          <h1 className="text-2xl">{videoInfo.title}</h1>
         </div>
       </div>
     </div>

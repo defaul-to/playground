@@ -22,6 +22,14 @@ const CustomVideoPlayer = ({ videoInfo }) => {
     const [isSeeking, setIsSeeking] = useState(false);
     const [tempPlayed, setTempPlayed] = useState(0);
     const [isFullScreen, setIsFullScreen] = useState(false);
+    const [showControls, setShowControls] = useState(true);
+    const [mouseMoved, setMouseMoved] = useState(false);
+    const skipButtonTimeout = useRef(null);
+    const controlsHideTimeout = useRef(null);
+    const mouseHideTimeout = useRef(null);
+    const [shouldDisplaySkipButton, setShouldDisplaySkipButton] = useState(true);
+    const [videoEnded, setVideoEnded] = useState(false);
+    const [alreadyShownSkipIntro, setAlreadyShownSkipIntro] = useState(false);
 
     useEffect(() => {
         const handleFullScreenChange = () => {
@@ -46,6 +54,52 @@ const CustomVideoPlayer = ({ videoInfo }) => {
         };
     }, []);
 
+    useEffect(() => {
+        if (showSkipButton && shouldDisplaySkipButton) {
+            skipButtonTimeout.current = setTimeout(() => {
+                setShouldDisplaySkipButton(false);
+                setShowSkipButton(false);
+                setAlreadyShownSkipIntro(true);
+            }, 5000);
+        }
+        else if (!showControls)
+        {
+            setShouldDisplaySkipButton(false);
+            setShowSkipButton(false);
+            setAlreadyShownSkipIntro(true);
+        }
+        else
+        {
+            setShouldDisplaySkipButton(false);
+            setShowSkipButton(false);
+            setAlreadyShownSkipIntro(true);
+        }
+        return () => clearTimeout(skipButtonTimeout.current);
+    }, [showSkipButton]);
+
+    useEffect(() => {
+        if (mouseMoved) {
+            setShowControls(true);
+            document.getElementById("player-container").classList.remove("cursor-none");
+
+            if (controlsHideTimeout.current) {
+                clearTimeout(controlsHideTimeout.current);
+            }
+            if (mouseHideTimeout.current) {
+                clearTimeout(mouseHideTimeout.current);
+            }
+            controlsHideTimeout.current = setTimeout(() => {
+                setShowControls(false);
+                setMouseMoved(false);
+                document.getElementById("player-container").classList.add("cursor-none");
+            }, 3000);
+        }
+    }, [mouseMoved]);
+
+    const handleMouseMove = () => {
+        setMouseMoved(true);
+    };
+
     const handlePlayPause = () => {
         setPlaying(!playing);
         if (!hasStartedPlaying) {
@@ -62,14 +116,22 @@ const CustomVideoPlayer = ({ videoInfo }) => {
         const { intro, outro } = videoInfo;
         if (intro && intro.start !== undefined && intro.end !== undefined) {
             if (state.playedSeconds >= intro.start && state.playedSeconds <= intro.end) {
-                setShowSkipButton(true);
+                if (shouldDisplaySkipButton || (!shouldDisplaySkipButton && showControls))
+                {
+                    setShowSkipButton(true);
+                }
             } else {
                 setShowSkipButton(false);
+                setShouldDisplaySkipButton(true);
             }
         }
 
         if (state.playedSeconds == duration) {
+            setVideoEnded(true);
             setPlaying(false);
+        } else
+        {
+            setVideoEnded(false);
         }
     };
 
@@ -81,7 +143,7 @@ const CustomVideoPlayer = ({ videoInfo }) => {
         const { intro } = videoInfo;
         if (intro && intro.end !== undefined) {
             playerRef.current.seekTo(intro.end, 'seconds');
-            setPlaying(true); // Start playing after skipping intro
+            setPlaying(true);
             setShowSkipButton(false);
         }
     };
@@ -120,7 +182,13 @@ const CustomVideoPlayer = ({ videoInfo }) => {
     };
 
     return (
-        <div id="player-container" className={`w-full h-full relative ${isFullScreen ? 'fullscreen' : ''}`} onMouseEnter={() => setHovering(true)} onMouseLeave={() => setHovering(false)}>
+        <div
+            id="player-container"
+            className={`w-full h-full relative ${isFullScreen ? 'fullscreen' : ''}`}
+            onMouseEnter={() => setHovering(true)}
+            onMouseLeave={() => setHovering(false)}
+            onMouseMove={handleMouseMove}
+        >
             {!hasStartedPlaying && (
                 <div className="bg-primary w-full aspect-video justify-center flex">
                     <button onClick={handlePlayPause} className=''>
@@ -143,14 +211,14 @@ const CustomVideoPlayer = ({ videoInfo }) => {
                             height="100%"
                         />
                     </div>
-                    <div className={`absolute w-full bottom-0 flex flex-col justify-between items-center bg-gradient-to-t from-primary to-transparent transition-opacity duration-300 ${hovering ? 'opacity-100' : 'opacity-0'} ${isFullScreen ? 'fullscreen-controls' : ''}`}>
-                        {showSkipButton && (
-                            <div className="absolute bottom-20 right-0 m-5">
-                                <button onClick={handleSkipIntro} className="text-white font-bold uppercase outline outline-1 p-2">
-                                    Intro überspringen
-                                </button>
-                            </div>
-                        )}
+                    {showSkipButton && (
+                        <div className={`absolute bottom-20 right-0 m-5 transition-opacity duration-300 ${showSkipButton ? 'opacity-100' : 'opacity-0'}`}>
+                            <button onClick={handleSkipIntro} className="text-white font-bold uppercase outline outline-1 p-2">
+                                Intro überspringen
+                            </button>
+                        </div>
+                    )}
+                    <div className={`absolute w-full bottom-0 flex flex-col justify-between items-center bg-gradient-to-t from-primary to-transparent transition-opacity duration-300 ${showControls || videoEnded ? 'opacity-100' : 'opacity-0'}`}>
                         <div className='flex flex-col w-full pb-5 gap-2'>
                             <div className='flex w-full justify-between px-4'>
                                 <div className='flex gap-5'>
@@ -158,16 +226,16 @@ const CustomVideoPlayer = ({ videoInfo }) => {
                                         {played == duration ? <ReplayIcon /> : playing ? <PauseIcon /> : <PlayArrowIcon />}
                                     </IconButton>
 
-                                    <IconButton onClick={handleSkipIntro} sx={{ color: 'white', padding: 0, margin: 0 }}>
+                                    <IconButton disabled="true" onClick={handleSkipIntro} sx={{ color: 'white', padding: 0, margin: 0 }}>
                                         <SkipNextIcon />
                                     </IconButton>
 
-                                    <IconButton onClick={handleFullScreen} sx={{ color: 'white', padding: 0, margin: 0 }}>
+                                    <IconButton disabled="true" onClick={handleFullScreen} sx={{ color: 'white', padding: 0, margin: 0 }}>
                                         <VolumeUpIcon />
                                     </IconButton>
                                 </div>
                                 <div className='flex gap-5'>
-                                    <IconButton onClick={handleFullScreen} sx={{ color: 'white', padding: 0, margin: 0 }}>
+                                    <IconButton disabled="true" onClick={handleFullScreen} sx={{ color: 'white', padding: 0, margin: 0 }}>
                                         <SettingsIcon />
                                     </IconButton>
 
