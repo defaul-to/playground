@@ -24,12 +24,10 @@ const CustomVideoPlayer = ({ videoInfo }) => {
     const [isFullScreen, setIsFullScreen] = useState(false);
     const [showControls, setShowControls] = useState(true);
     const [mouseMoved, setMouseMoved] = useState(false);
+    const [videoEnded, setVideoEnded] = useState(false);
     const skipButtonTimeout = useRef(null);
     const controlsHideTimeout = useRef(null);
     const mouseHideTimeout = useRef(null);
-    const [shouldDisplaySkipButton, setShouldDisplaySkipButton] = useState(true);
-    const [videoEnded, setVideoEnded] = useState(false);
-    const [alreadyShownSkipIntro, setAlreadyShownSkipIntro] = useState(false);
 
     useEffect(() => {
         const handleFullScreenChange = () => {
@@ -54,28 +52,17 @@ const CustomVideoPlayer = ({ videoInfo }) => {
         };
     }, []);
 
+    /*
     useEffect(() => {
-        if (showSkipButton && shouldDisplaySkipButton) {
+        if (showSkipButton) {
             skipButtonTimeout.current = setTimeout(() => {
-                setShouldDisplaySkipButton(false);
                 setShowSkipButton(false);
-                setAlreadyShownSkipIntro(true);
-            }, 5000);
+            }, 3000); // Reduced timeout to match controls disappearance
+        } else {
+            clearTimeout(skipButtonTimeout.current);
         }
-        else if (!showControls)
-        {
-            setShouldDisplaySkipButton(false);
-            setShowSkipButton(false);
-            setAlreadyShownSkipIntro(true);
-        }
-        else
-        {
-            setShouldDisplaySkipButton(false);
-            setShowSkipButton(false);
-            setAlreadyShownSkipIntro(true);
-        }
-        return () => clearTimeout(skipButtonTimeout.current);
     }, [showSkipButton]);
+    */
 
     useEffect(() => {
         if (mouseMoved) {
@@ -111,26 +98,25 @@ const CustomVideoPlayer = ({ videoInfo }) => {
         setPlayed(state.playedSeconds);
 
         if (!isSeeking) {
-            setSliderValue((state.playedSeconds / duration) * 100);
+            // setSliderValue((state.playedSeconds / duration) * 100);
+            setSliderValue(state.playedSeconds);
         }
-        const { intro, outro } = videoInfo;
+
+        const { intro } = videoInfo;
         if (intro && intro.start !== undefined && intro.end !== undefined) {
-            if (state.playedSeconds >= intro.start && state.playedSeconds <= intro.end) {
-                if (shouldDisplaySkipButton || (!shouldDisplaySkipButton && showControls))
-                {
-                    setShowSkipButton(true);
-                }
+            if (/*playing &&*/ state.playedSeconds >= intro.start && state.playedSeconds <= intro.start + 5) {
+                setShowSkipButton(true);
+            } else if (/*playing &&*/ state.playedSeconds > intro.start && state.playedSeconds <= intro.end && showControls) {
+                setShowSkipButton(true);
             } else {
                 setShowSkipButton(false);
-                setShouldDisplaySkipButton(true);
             }
         }
 
-        if (state.playedSeconds == duration) {
+        if (state.playedSeconds >= duration) {
             setVideoEnded(true);
             setPlaying(false);
-        } else
-        {
+        } else {
             setVideoEnded(false);
         }
     };
@@ -181,12 +167,25 @@ const CustomVideoPlayer = ({ videoInfo }) => {
         return `${minutes < 10 ? '0' : ''}${minutes}:${secs < 10 ? '0' : ''}${secs}`;
     };
 
+    const handleMouseEnter = () => {
+        setHovering(true);
+        setShowControls(true);
+    };
+
+    const handleMouseLeave = () => {
+        setHovering(false);
+        if (!isFullScreen)
+        {
+            setShowControls(false);
+        }
+    };
+
     return (
         <div
             id="player-container"
             className={`w-full h-full relative ${isFullScreen ? 'fullscreen' : ''}`}
-            onMouseEnter={() => setHovering(true)}
-            onMouseLeave={() => setHovering(false)}
+            onMouseEnter={() => handleMouseEnter()}
+            onMouseLeave={() => handleMouseLeave()}
             onMouseMove={handleMouseMove}
         >
             {!hasStartedPlaying && (
@@ -223,7 +222,7 @@ const CustomVideoPlayer = ({ videoInfo }) => {
                             <div className='flex w-full justify-between px-4'>
                                 <div className='flex gap-5'>
                                     <IconButton onClick={handlePlayPause} sx={{ color: 'white', padding: 0, margin: 0 }}>
-                                        {played == duration ? <ReplayIcon /> : playing ? <PauseIcon /> : <PlayArrowIcon />}
+                                        {videoEnded ? <ReplayIcon /> : playing ? <PauseIcon /> : <PlayArrowIcon />}
                                     </IconButton>
 
                                     <IconButton disabled="true" onClick={handleSkipIntro} sx={{ color: 'white', padding: 0, margin: 0 }}>
@@ -251,17 +250,28 @@ const CustomVideoPlayer = ({ videoInfo }) => {
                                 <Slider
                                     size="small"
                                     value={sliderValue}
+                                    min={0}
+                                    max={duration}
+                                    step={1}
                                     onChange={(e, newValue) => {
                                         setIsSeeking(true);
                                         setSliderValue(newValue);
+                                        
+                                        /*
                                         const newTime = (newValue / 100) * duration;
                                         setTempPlayed(newTime);
+                                        */
+                                        setTempPlayed(newValue);
+                                        // console.log("Slider Value: " + newValue + ", Duration: " + duration + ", New Time: " + newValue);
                                     }}
                                     onChangeCommitted={(e, newValue) => {
                                         setIsSeeking(false);
-                                        const newTime = (newValue / 100) * duration;
-                                        playerRef.current.seekTo(newTime, 'seconds');
-                                        setPlayed(newTime);
+                                        // const newTime = (newValue / 100) * duration;
+                                        playerRef.current.seekTo(newValue, 'seconds');
+                                        setPlayed(newValue);
+                                        if (newValue >= duration) {
+                                            setPlaying(false);
+                                        }
                                     }}
                                     color='white'
                                 />
