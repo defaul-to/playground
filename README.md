@@ -1,16 +1,22 @@
 ### private anime streaming website (playground environment) - will most likely contain broken, unstable or unoptimized code
 ###### you've been warned! feel free to reuse my code or contact me to dev such a website for you if you like what you are seeing. projects I do for fun are the ones I can put thousands of hours into. would love to have a team on my side. ``bs.to`` wasn't interested in automating their website and the ``anfilix.tv`` admin didn't want to give me read-only database access.
 
-**requirements:**
+### **requirements:**
 - [Node.js](https://nodejs.org/)
 
-**how to run this:**
+### **how to run this:**
 ```shell
 npm install
 npm run dev
 ```
 
-**this react.js app was built using:**
+### **if you want to collab on this and need api changes, new endpoints that do something specific (such as database inserts, database selects, file operations), let me know**
+
+I can make the api do anything for you. and I will share the code of the new endpoint you request.
+- I will refuse requests that I deem unsafe, such as an endpoint that executes any sql string you pass to it.
+- I am more than happy to allow sql operations that are validated on the server-side (api) first. such as an insert into a user/account table after verifying that an invite code (needed to register) is valid.
+
+### **this react.js app was built using:**
 - [Vite.js](https://vitejs.dev/) - to set-up the project in less than a minute
 - [TailwindCSS](https://tailwindcss.com/) - to style html elements inside the html code using classes
 - [ReactPlayer](https://github.com/cookpete/react-player) - to have a solid video player base I can customize
@@ -21,7 +27,7 @@ and maybe more ready-to-use solutions to come. will keep this updated.
 
 as of now the backend (database, api) remains private.
 
-Current Features:
+### **current features:**
 - video player
   - [x] big play icon before the video started
   - [x] skip intro button (timestamps have to be passed to the video player for this to show up)
@@ -44,4 +50,5 @@ Current Features:
   - [x] video controls remain visible when the video is over
   - [ ] when moving the slider, the slider should show a small image of the current target frame
 
+### **showcase:**
 https://github.com/user-attachments/assets/4e784e1b-f3a1-4954-b599-4c019b7833e7
