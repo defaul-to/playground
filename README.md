@@ -13,8 +13,28 @@ npm run dev
 ### **if you want to collab on this and need api changes, new endpoints that do something specific (such as database inserts, database selects, file operations), let me know**
 
 I can make the api do anything for you. and I will share the code of the new endpoint you request.
-- I will refuse requests that I deem unsafe, such as an endpoint that executes any sql string you pass to it.
-- I am more than happy to allow sql operations that are validated on the server-side (api) first. such as an insert into a user/account table after verifying that an invite code (needed to register) is valid.
+- I will refuse requests that I deem unsafe
+  - Example: an endpoint that executes any sql string you pass to it:
+
+    ```js
+      app.post('/api/query', async (req, res) => {
+        try {
+          await connectToDatabase();
+          const { sqlQuery } = req.body;
+          if (!sqlQuery) {
+            return res.status(400).json( { error: 'SQL query is required' });
+          }
+          const result = await sql.query(sqlQuery);
+          res.status(200).json(result.recordset);
+          
+        } catch (err) {
+          console.error('error executing query:', err);
+          res.status(500).json({ error: 'Internal Server Error' });
+        }
+      });
+      ```
+- I am more than happy to allow sql operations that are validated on the server-side (api) first.
+  - Example: an insert into a guest/user/account table after verifying that an invite code (needed to register/enter the website) is valid.
 
 ### **this react.js app was built using:**
 - [Vite.js](https://vitejs.dev/) - to set-up the project in less than a minute
